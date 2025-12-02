@@ -13,26 +13,45 @@ datasource db {
   provider = "postgresql"
 }
 
+// ============================================
+// ENUMS
+// ============================================
+
 enum Role {
   ADMIN
   USER
 }
 
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ============================================
+// UTILISATEURS
+// ============================================
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  firstName String?
-  lastName  String?
-  password  String
-  isVerified Boolean  @default(false)
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String           @id @default(cuid())
+  email           String           @unique
+  firstName       String?
+  lastName        String?
+  password        String
+  isVerified      Boolean          @default(false)
+  role            Role             @default(USER)
+  businessProfile BusinessProfile?
+  invoices        Invoice[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 // ============================================
 // AUTHENTIFICATION
 // ============================================
+
 model OTP {
   id        String   @id @default(cuid())
   email     String
@@ -43,4 +62,105 @@ model OTP {
   @@index([email])
   @@index([code])
   @@index([expiresAt])
+}
+
+// ============================================
+// PROFIL ENTREPRISE
+// ============================================
+
+model BusinessProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String?
+  address     String?
+  city        String?
+  postalCode  String?
+  country     String?  @default("France")
+  phone       String?
+  siret       String?
+  vatNumber   String?
+  logo        String? // URL Cloudinary
+  brandColor  String?  @default("#000000")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// FACTURES
+// ============================================
+
+model Invoice {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoiceNumber    String
+  status           InvoiceStatus @default(DRAFT)
+  // Infos client (directement sur la facture)
+  clientName       String
+  clientEmail      String?
+  clientPhone      String?
+  clientAddress    String?
+  clientCity       String?
+  clientPostalCode String?
+  clientCountry    String?
+  clientSiret      String?
+  clientVatNumber  String?
+  // Dates & montants
+  issueDate        DateTime      @default(now())
+  dueDate          DateTime?
+  subtotal         Decimal       @db.Decimal(10, 2)
+  taxRate          Decimal?      @default(20) @db.Decimal(5, 2)
+  taxAmount        Decimal?      @db.Decimal(10, 2)
+  discount         Decimal?      @default(0) @db.Decimal(10, 2)
+  total            Decimal       @db.Decimal(10, 2)
+  currency         String        @default("EUR")
+  // Options
+  notes            String?
+  terms            String?
+  templateId       String?
+  template         Template?     @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  items            InvoiceItem[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@unique([userId, invoiceNumber])
+  @@index([userId])
+  @@index([status])
+  @@index([templateId])
+}
+
+// ============================================
+// LIGNES DE FACTURE
+// ============================================
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Decimal  @db.Decimal(10, 2)
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  total       Decimal  @db.Decimal(10, 2)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([invoiceId])
+}
+
+// ============================================
+// MODÈLES DE FACTURE
+// ============================================
+
+model Template {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  preview     String? // URL image preview
+  isDefault   Boolean   @default(false)
+  config      Json // Configuration du template (couleurs, layout, fonts, etc.)
+  invoices    Invoice[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

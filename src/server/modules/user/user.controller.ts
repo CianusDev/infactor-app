@@ -3,6 +3,7 @@ import { ValidationError } from "@/lib/errors";
 import z, { ZodError } from "zod";
 import {
   createUserSchema,
+  forgotPasswordSchema,
   loginUserSchema,
   resendVerificationCodeSchema,
   resetPasswordSchema,
@@ -13,6 +14,7 @@ import { UserService } from "./user.service";
 
 export class UserController {
   private readonly userService: UserService;
+
   constructor() {
     this.userService = new UserService();
   }
@@ -55,10 +57,53 @@ export class UserController {
     }
   }
 
+  /**
+   * Étape 1 : Demande de réinitialisation de mot de passe (forgot-password)
+   * Envoie un code OTP à l'email
+   */
+  async forgotPassword(data: z.infer<typeof forgotPasswordSchema>) {
+    try {
+      const validated = forgotPasswordSchema.parse(data);
+      return await this.userService.requestPasswordReset(validated.email);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          error.issues.map((e) => e.message).join(", "),
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Étape 2 : Réinitialisation du mot de passe avec le code OTP (reset-password)
+   * Vérifie le code et met à jour le mot de passe
+   */
   async resetPassword(data: z.infer<typeof resetPasswordSchema>) {
     try {
       const validated = resetPasswordSchema.parse(data);
-      return await this.userService.resetUserPassword(validated.email);
+      return await this.userService.resetPassword(
+        validated.email,
+        validated.code,
+        validated.newPassword,
+      );
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new ValidationError(
+          error.issues.map((e) => e.message).join(", "),
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Renvoyer le code de réinitialisation de mot de passe
+   */
+  async resendPasswordResetCode(data: z.infer<typeof forgotPasswordSchema>) {
+    try {
+      const validated = forgotPasswordSchema.parse(data);
+      return await this.userService.resendPasswordResetCode(validated.email);
     } catch (error) {
       if (error instanceof ZodError) {
         throw new ValidationError(

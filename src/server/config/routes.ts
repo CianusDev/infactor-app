@@ -1,16 +1,21 @@
 export const routes = {
   auth: {
-    login: "/auth/login",
-    register: "/auth/register",
-    resetPassword: "/auth/reset-password",
-    resendVerificationCode: "/auth/resend-verification-code",
+    login: "/login",
+    signup: "/signup",
+    verifyEmail: "/verify-email",
+    forgotPassword: "/forgot-password",
+    resetPassword: "/reset-password",
   },
   app: {
     home: "/",
-    contact: "/contact",
-    about: "/about",
-    dashboard: {
-      overview: "/dashboard/overview",
+    invoices: {
+      new: "/invoices/new",
+      detail: (id: string) => `/invoices/${id}`,
+      edit: (id: string) => `/invoices/${id}/edit`,
+    },
+    settings: {
+      profile: "/settings/profile",
+      business: "/settings/business",
     },
   },
   admin: {
@@ -21,16 +26,28 @@ export const routes = {
 
 export const publicRoutes = [
   routes.auth.login,
-  routes.auth.register,
+  routes.auth.signup,
+  routes.auth.verifyEmail,
+  routes.auth.forgotPassword,
   routes.auth.resetPassword,
-  routes.auth.resendVerificationCode,
   routes.app.home,
-  routes.app.contact,
-  routes.app.about,
+];
+
+export const authRoutes = [
+  routes.auth.login,
+  routes.auth.signup,
+  routes.auth.verifyEmail,
+  routes.auth.forgotPassword,
+  routes.auth.resetPassword,
 ];
 
 export const adminRoutes = [routes.admin.dashboard, routes.admin.users];
 
-export const userRoutes = [routes.app.dashboard.overview];
+export const userRoutes = [
+  routes.app.home,
+  routes.app.invoices.new,
+  routes.app.settings.profile,
+  routes.app.settings.business,
+];
 
 export const protectedRoutes = [...adminRoutes, ...userRoutes];

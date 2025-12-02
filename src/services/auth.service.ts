@@ -4,6 +4,7 @@ import { api } from "@/server/config/axios";
 import { createSession } from "@/server/config/session";
 import {
   CreateUserInput,
+  ForgotPasswordInput,
   LoginUserInput,
   ResendVerificationCodeInput,
   ResetPasswordInput,
@@ -37,16 +38,8 @@ export async function signup(payload: CreateUserInput) {
   const status = result.status;
   const data = result.data;
   const user = data.user;
-  const token = data.token;
   const error = data.error;
   const res = prepareDataApi(status, user, error);
-  if (res.success) {
-    await createSession({
-      data: user,
-      token,
-    });
-    return res;
-  }
   return res;
 }
 
@@ -85,8 +78,28 @@ export async function resendVerificationCode(
   return res;
 }
 
+export async function forgotPassword(payload: ForgotPasswordInput) {
+  const endpoint = `/auth/forgot-password`;
+  const result = await api.post(endpoint, payload);
+  const status = result.status;
+  const data = result.data;
+  const error = data.error;
+  const res = prepareDataApi(status, data, error);
+  return res;
+}
+
 export async function resetPassword(payload: ResetPasswordInput) {
   const endpoint = `/auth/reset-password`;
+  const result = await api.post(endpoint, payload);
+  const status = result.status;
+  const data = result.data;
+  const error = data.error;
+  const res = prepareDataApi(status, data, error);
+  return res;
+}
+
+export async function resendResetCode(payload: ForgotPasswordInput) {
+  const endpoint = `/auth/resend-reset-code`;
   const result = await api.post(endpoint, payload);
   const status = result.status;
   const data = result.data;

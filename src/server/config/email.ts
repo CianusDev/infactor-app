@@ -132,26 +132,44 @@ export const emailTemplates = {
       </div>
     `,
   },
-  resetPasswordCustomer: {
-    subject: `Réinitialisation de votre mot de passe - ${appName}`,
+  resetPasswordCode: {
+    subject: `Code de réinitialisation de mot de passe - ${appName}`,
     html: ({
       firstName,
       lastName,
-      newPassword,
+      otpCode,
     }: {
       firstName?: string;
       lastName?: string;
-      newPassword: string;
+      otpCode: string;
     }) => `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #4F46E5;">Réinitialisation de mot de passe</h1>
         <p>Bonjour ${firstName || ""} ${lastName || ""},</p>
-        <p>Votre mot de passe a été réinitialisé avec succès.</p>
-        <p>Votre nouveau mot de passe temporaire est :</p>
-        <div style="background-color: #f3f4f6; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
-          <strong style="font-size: 18px; color: #1f2937;">${newPassword}</strong>
+        <p>Vous avez demandé à réinitialiser votre mot de passe. Voici votre code de vérification :</p>
+        <div style="background-color: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+          <h2 style="color: #4F46E5; font-size: 32px; letter-spacing: 8px; margin: 0;">${otpCode}</h2>
         </div>
-        <p style="color: #ef4444;">Nous vous recommandons de changer ce mot de passe dès votre prochaine connexion.</p>
+        <p style="color: #6b7280;">Ce code expirera dans 10 minutes.</p>
+        <p style="color: #ef4444;">Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.</p>
+        <p>Cordialement,<br/>L'équipe ${appName}</p>
+      </div>
+    `,
+  },
+  resetPasswordSuccess: {
+    subject: `Mot de passe modifié avec succès - ${appName}`,
+    html: ({
+      firstName,
+      lastName,
+    }: {
+      firstName?: string;
+      lastName?: string;
+    }) => `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #4F46E5;">Mot de passe modifié</h1>
+        <p>Bonjour ${firstName || ""} ${lastName || ""},</p>
+        <p>Votre mot de passe a été modifié avec succès.</p>
+        <p style="color: #6b7280;">Si vous n'êtes pas à l'origine de cette modification, veuillez nous contacter immédiatement.</p>
         <p>Cordialement,<br/>L'équipe ${appName}</p>
       </div>
     `,

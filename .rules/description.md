@@ -4,7 +4,7 @@ Fonctionnalités principales :
 1. Création de factures : Génération rapide de factures professionnelles avec des champs personnalisables (nom du client, description des services, montants, taxes, etc.).
 2. Personnalisation : Options pour ajouter des logos, choisir des couleurs et sélectionner parmi plusieurs modèles de factures.
 3. Gestion des clients : Base de données simple pour stocker les informations des clients et faciliter la création de factures récurrentes.
-4. Exportation et impression : Possibilité d'exporter les factures au format PDF ou PNG directement depuis l'application.
+4. Exportation et impression : Possibilité d'exporter les factures au format PDF directement depuis l'application.
 
 Technologies utilisées :
 - Frontend : Next.js 16 pour une interface utilisateur réactive et moderne.

@@ -1,14 +1,11 @@
+import { CheckCircle2, LucideInfo, XCircleIcon } from "lucide-react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
-
+import { ThemeProvider } from "@/providers/theme-provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -23,11 +20,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="fr" className="h-full" suppressHydrationWarning>
+      <body className={`${geistSans.className} h-full antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster
+            position="top-center"
+            richColors
+            toastOptions={{
+              classNames: {
+                title: geistSans.className,
+                description: geistSans.className,
+              },
+            }}
+            icons={{
+              error: <XCircleIcon />,
+              success: <CheckCircle2 />,
+              info: <LucideInfo />,
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

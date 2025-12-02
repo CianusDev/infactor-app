@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getErrorMessage(errors: ZodIssue[] | null, field: string) {
+export function getErrorMessage(errors: ZodIssue[] | undefined, field: string) {
   return errors?.find((e) => e.path[0] === field)?.message;
 }
 
