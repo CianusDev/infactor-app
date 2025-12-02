@@ -1,0 +1,1 @@
+Dans ce repertoire, vous trouverez des hooks personnalisés globale pour l'application de facturation. Ces hooks sont conçus pour gérer divers aspects de l'état et des effets secondaires dans les composants React.
