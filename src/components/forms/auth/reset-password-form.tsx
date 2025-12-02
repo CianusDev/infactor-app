@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +39,6 @@ export function ResetPasswordForm({
 }: React.ComponentProps<"form">) {
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get("email") || "";
-
   const [isPending, startTransition] = useTransition();
   const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<ZodIssue[]>([]);
