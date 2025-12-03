@@ -27,7 +27,7 @@ const defaultTemplateConfig: TemplateConfig = {
   fontSize: 12,
   layout: "classic",
   showLogo: true,
-  showWatermark: false,
+  logoUrl: null,
   headerPosition: "left",
   footerText: "Merci pour votre confiance.",
 };
@@ -127,11 +127,7 @@ export function DocumentThumbnail({
           height: 842, // Hauteur A4 en pixels
         }}
       >
-        <InvoiceDocument
-          config={templateConfig}
-          data={previewData}
-          scale={1}
-        />
+        <InvoiceDocument config={templateConfig} data={previewData} scale={1} />
       </div>
 
       {/* Affichage de la miniature ou état de chargement */}

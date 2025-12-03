@@ -10,7 +10,7 @@ export interface StyleConfig {
   fontSize?: number;
   layout?: "classic" | "modern" | "minimal";
   showLogo?: boolean;
-  showWatermark?: boolean;
+  logoUrl?: string | null;
   headerPosition?: "left" | "center" | "right";
   footerText?: string;
 }

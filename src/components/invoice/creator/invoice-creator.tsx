@@ -258,7 +258,7 @@ export function InvoiceCreator({
       {/* Contenu principal - Split screen */}
       <div className="flex-1 flex overflow-hidden">
         {/* Panneau gauche - Formulaire (largeur fixe) */}
-        <div className="w-[400px] border-r bg-background flex flex-col overflow-hidden">
+        <div className="w-[500px] border-r bg-background flex flex-col overflow-hidden">
           <Tabs
             value={activeTab}
             onValueChange={(v) => setActiveTab(v as "form" | "style")}

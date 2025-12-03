@@ -11,7 +11,6 @@ import {
   PDFTotalsSection,
   PDFNotesSection,
   PDFFooter,
-  PDFWatermark,
 } from "./components";
 
 // ============================================
@@ -22,6 +21,22 @@ export interface InvoicePDFProps {
   config: TemplateConfig;
   data: InvoicePreviewData;
 }
+
+// ============================================
+// CONFIGURATION PAR DÉFAUT
+// ============================================
+
+const defaultConfig: TemplateConfig = {
+  primaryColor: "#1f2937",
+  secondaryColor: "#6b7280",
+  fontFamily: "Inter",
+  fontSize: 12,
+  layout: "classic",
+  showLogo: true,
+  logoUrl: null,
+  headerPosition: "left",
+  footerText: "Merci pour votre confiance.",
+};
 
 // ============================================
 // COMPOSANT PRINCIPAL
@@ -41,32 +56,27 @@ export interface InvoicePDFProps {
  * - PDFFooter: Texte de pied de page
  */
 export function InvoicePDF({ config, data }: InvoicePDFProps) {
+  // Fusionner la config avec les valeurs par défaut pour éviter les undefined
+  const safeConfig: TemplateConfig = {
+    ...defaultConfig,
+    ...(config || {}),
+  };
+
   // Créer les styles basés sur la configuration
-  const styles = createPDFStyles(config);
+  const styles = createPDFStyles(safeConfig);
 
   // Convertir les données vers le format structuré
   const pdfData = convertToInvoicePDFData(data);
 
-  // Extraire les options de configuration
-  const {
-    layout = "classic",
-    showLogo = true,
-    showWatermark = false,
-    footerText = "",
-    primaryColor = "#1f2937",
-  } = config;
+  // Extraire les options de configuration avec valeurs par défaut garanties
+  const layout = safeConfig.layout || "classic";
+  const showLogo = safeConfig.showLogo !== false;
+  const logoUrl = safeConfig.logoUrl || null;
+  const footerText = safeConfig.footerText || "";
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Filigrane (Watermark) */}
-        {showWatermark && (
-          <PDFWatermark
-            companyName={pdfData.company.name}
-            primaryColor={primaryColor}
-          />
-        )}
-
         {/* Barre colorée pour le layout moderne */}
         {layout === "modern" && <View style={styles.topBar} />}
 
@@ -75,6 +85,7 @@ export function InvoicePDF({ config, data }: InvoicePDFProps) {
           styles={styles}
           company={pdfData.company}
           showLogo={showLogo}
+          logoUrl={logoUrl}
         />
 
         {/* Titre de la facture */}

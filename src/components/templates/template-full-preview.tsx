@@ -29,7 +29,6 @@ export function TemplateFullPreview({
     fontSize = 12,
     layout = "classic",
     showLogo = true,
-    showWatermark = false,
     headerPosition = "left",
     footerText = "",
   } = config;
@@ -63,16 +62,6 @@ export function TemplateFullPreview({
         padding: "20mm",
       }}
     >
-      {/* Watermark */}
-      {showWatermark && (
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5"
-          style={{ fontSize: "120px", color: primaryColor }}
-        >
-          <span className="font-bold rotate-[-30deg]">{data.companyName}</span>
-        </div>
-      )}
-
       {/* Bande colorée pour le layout moderne */}
       {layout === "modern" && (
         <div

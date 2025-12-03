@@ -1,4 +1,4 @@
-import { Text, View } from "@react-pdf/renderer";
+import { Text, View, Image } from "@react-pdf/renderer";
 import { CompanyData } from "../types";
 import { createPDFStyles } from "../styles";
 
@@ -6,6 +6,7 @@ export interface PDFHeaderProps {
   styles: ReturnType<typeof createPDFStyles>;
   company: CompanyData;
   showLogo?: boolean;
+  logoUrl?: string | null;
 }
 
 /**
@@ -16,14 +17,32 @@ export function PDFHeader({
   styles,
   company,
   showLogo = true,
+  logoUrl,
 }: PDFHeaderProps) {
+  // Utiliser le logo de l'entreprise en priorité, sinon celui du template
+  const displayLogo = company.logo || logoUrl;
+
   return (
     <View style={styles.header}>
       {/* Logo */}
       {showLogo && (
-        <View style={styles.logo}>
-          <Text style={styles.logoText}>LOGO</Text>
-        </View>
+        <>
+          {displayLogo ? (
+            <Image
+              src={displayLogo}
+              style={{
+                width: 120,
+                height: 50,
+                objectFit: "contain",
+                marginBottom: 10,
+              }}
+            />
+          ) : (
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>LOGO</Text>
+            </View>
+          )}
+        </>
       )}
 
       {/* Nom de l'entreprise */}

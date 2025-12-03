@@ -97,7 +97,7 @@ const defaultTemplateConfig: TemplateConfig = {
   fontSize: 12,
   layout: "classic",
   showLogo: true,
-  showWatermark: false,
+  logoUrl: null,
   headerPosition: "left",
   footerText: "Merci pour votre confiance.",
 };

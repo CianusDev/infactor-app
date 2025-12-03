@@ -11,7 +11,7 @@ export const templateConfigSchema = z.object({
   fontSize: z.number().optional(),
   layout: z.enum(["classic", "modern", "minimal"]).optional(),
   showLogo: z.boolean().optional(),
-  showWatermark: z.boolean().optional(),
+  logoUrl: z.string().url().optional().nullable(),
   headerPosition: z.enum(["left", "center", "right"]).optional(),
   footerText: z.string().optional(),
 });

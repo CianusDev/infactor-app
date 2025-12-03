@@ -45,6 +45,7 @@ import {
   LAYOUT_OPTIONS,
   PRESET_COLORS,
 } from "@/hooks/use-template-customizer";
+import { LogoUpload } from "./logo-upload";
 
 // ============================================
 // TYPES
@@ -225,7 +226,7 @@ export function TemplateEditor({
     fontSize = 12,
     layout = "classic",
     showLogo = true,
-    showWatermark = false,
+    logoUrl = null,
     headerPosition = "left",
     footerText = "",
   } = config;
@@ -461,18 +462,18 @@ export function TemplateEditor({
             />
           </OptionRow>
 
-          {/* Watermark */}
-          <OptionRow
-            label="Filigrane"
-            description="Nom de l'entreprise en arrière-plan"
-          >
-            <Switch
-              checked={showWatermark}
-              onCheckedChange={(checked) =>
-                onConfigChange({ showWatermark: checked })
-              }
-            />
-          </OptionRow>
+          {/* Upload du logo */}
+          {showLogo && (
+            <div className="space-y-2 pt-2">
+              <Label className="text-sm font-medium">
+                Logo de l&apos;entreprise
+              </Label>
+              <LogoUpload
+                value={logoUrl}
+                onChange={(url) => onConfigChange({ logoUrl: url })}
+              />
+            </div>
+          )}
 
           {/* Footer */}
           <div className="space-y-2 pt-2">

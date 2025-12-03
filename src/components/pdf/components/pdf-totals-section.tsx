@@ -37,7 +37,7 @@ export function PDFTotalsSection({ styles, totals }: PDFTotalsSectionProps) {
 
         {/* TVA */}
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>TVA ({taxRate}%)</Text>
+          <Text style={styles.totalLabel}>TVA ({String(taxRate)}%)</Text>
           <Text style={styles.totalValue}>
             {formatCurrency(taxAmount, currency)}
           </Text>

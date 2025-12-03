@@ -36,7 +36,7 @@ export const styleConfigSchema = z.object({
   fontSize: z.number().optional(),
   layout: z.enum(["classic", "modern", "minimal"]).optional(),
   showLogo: z.boolean().optional(),
-  showWatermark: z.boolean().optional(),
+  logoUrl: z.string().url().optional().nullable(),
   headerPosition: z.enum(["left", "center", "right"]).optional(),
   footerText: z.string().optional(),
 });
@@ -62,7 +62,11 @@ export const createDocumentSchema = z.object({
   companyPostalCode: z.string().optional().nullable(),
   companyCountry: z.string().optional().nullable(),
   companyPhone: z.string().optional().nullable(),
-  companyEmail: z.string().email({ message: "Email entreprise invalide" }).optional().nullable(),
+  companyEmail: z
+    .string()
+    .email({ message: "Email entreprise invalide" })
+    .optional()
+    .nullable(),
   companySiret: z
     .string()
     .regex(/^[0-9]{14}$/, { message: "Le SIRET doit contenir 14 chiffres" })
@@ -70,16 +74,26 @@ export const createDocumentSchema = z.object({
     .nullable(),
   companyVatNumber: z
     .string()
-    .regex(/^[A-Z]{2}[0-9A-Z]{2,13}$/, { message: "Le numéro de TVA est invalide" })
+    .regex(/^[A-Z]{2}[0-9A-Z]{2,13}$/, {
+      message: "Le numéro de TVA est invalide",
+    })
     .optional()
     .nullable(),
-  companyLogo: z.string().url({ message: "URL du logo invalide" }).optional().nullable(),
+  companyLogo: z
+    .string()
+    .url({ message: "URL du logo invalide" })
+    .optional()
+    .nullable(),
 
   // Infos client
   clientName: z.string({ message: "Le nom du client est requis" }).min(1, {
     message: "Le nom du client ne peut pas être vide",
   }),
-  clientEmail: z.string().email({ message: "Email client invalide" }).optional().nullable(),
+  clientEmail: z
+    .string()
+    .email({ message: "Email client invalide" })
+    .optional()
+    .nullable(),
   clientPhone: z.string().optional().nullable(),
   clientAddress: z.string().optional().nullable(),
   clientCity: z.string().optional().nullable(),
@@ -87,12 +101,16 @@ export const createDocumentSchema = z.object({
   clientCountry: z.string().optional().nullable(),
   clientSiret: z
     .string()
-    .regex(/^[0-9]{14}$/, { message: "Le SIRET client doit contenir 14 chiffres" })
+    .regex(/^[0-9]{14}$/, {
+      message: "Le SIRET client doit contenir 14 chiffres",
+    })
     .optional()
     .nullable(),
   clientVatNumber: z
     .string()
-    .regex(/^[A-Z]{2}[0-9A-Z]{2,13}$/, { message: "Le numéro de TVA client est invalide" })
+    .regex(/^[A-Z]{2}[0-9A-Z]{2,13}$/, {
+      message: "Le numéro de TVA client est invalide",
+    })
     .optional()
     .nullable(),
 

@@ -8,7 +8,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -27,6 +26,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { DocumentFormData } from "@/types/document";
+import { LogoUpload } from "@/components/templates/logo-upload";
 
 export interface CompanyInfoFormProps {
   formData: DocumentFormData;
@@ -264,29 +264,18 @@ export function CompanyInfoForm({
               </div>
             </div>
 
-            {/* Logo URL */}
+            {/* Logo */}
             <div className="space-y-2">
-              <Label htmlFor="companyLogo" className="flex items-center gap-2">
-                <ImageIcon className="h-4 w-4" />
-                URL du logo
+              <Label className="text-sm font-medium">
+                Logo de l&apos;entreprise
               </Label>
-              <Input
-                id="companyLogo"
-                type="url"
-                value={formData.companyLogo || ""}
-                onChange={(e) =>
-                  onUpdate("companyLogo", e.target.value || null)
-                }
-                placeholder="https://exemple.com/logo.png"
-                className={cn(errors.companyLogo && "border-destructive")}
+              <LogoUpload
+                value={formData.companyLogo}
+                onChange={(url) => onUpdate("companyLogo", url)}
               />
               {errors.companyLogo && (
                 <p className="text-sm text-destructive">{errors.companyLogo}</p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Entrez l&apos;URL de votre logo pour qu&apos;il apparaisse sur
-                la facture
-              </p>
             </div>
           </CollapsibleContent>
         </Collapsible>

@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -74,7 +73,7 @@ export function TemplateCustomizer({
     fontSize = 12,
     layout = "classic",
     showLogo = true,
-    showWatermark = false,
+
     headerPosition = "left",
     footerText = "",
   } = config;
@@ -478,30 +477,6 @@ export function TemplateCustomizer({
                     checked={showLogo}
                     onCheckedChange={(checked) =>
                       onConfigChange({ showLogo: checked })
-                    }
-                  />
-                </div>
-
-                <Separator />
-
-                {/* Afficher le watermark */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <Label htmlFor="showWatermark" className="cursor-pointer">
-                        Afficher le filigrane
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Affiche le nom de l&apos;entreprise en arrière-plan
-                      </p>
-                    </div>
-                  </div>
-                  <Switch
-                    id="showWatermark"
-                    checked={showWatermark}
-                    onCheckedChange={(checked) =>
-                      onConfigChange({ showWatermark: checked })
                     }
                   />
                 </div>

@@ -31,10 +31,14 @@ export function PDFItemsTable({ styles, items, currency }: PDFItemsTableProps) {
       {items.map((item, index) => (
         <View
           key={index}
-          style={[styles.tableRow, index % 2 === 0 ? styles.tableRowAlt : {}]}
+          style={
+            index % 2 === 0
+              ? [styles.tableRow, styles.tableRowAlt]
+              : styles.tableRow
+          }
         >
           <Text style={styles.colDescription}>{item.description}</Text>
-          <Text style={styles.colQuantity}>{item.quantity}</Text>
+          <Text style={styles.colQuantity}>{String(item.quantity)}</Text>
           <Text style={styles.colPrice}>
             {formatCurrency(item.unitPrice, currency)}
           </Text>

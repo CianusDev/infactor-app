@@ -50,10 +50,23 @@ export function PDFDownloadButton({
   const handleDownload = async () => {
     setIsGenerating(true);
 
+    // S'assurer que la config a toutes les valeurs nécessaires
+    const safeConfig = {
+      primaryColor: config?.primaryColor || "#1f2937",
+      secondaryColor: config?.secondaryColor || "#6b7280",
+      fontFamily: config?.fontFamily || "Inter",
+      fontSize: config?.fontSize || 12,
+      layout: config?.layout || ("classic" as const),
+      showLogo: config?.showLogo !== false,
+      logoUrl: config?.logoUrl || null,
+      headerPosition: config?.headerPosition || ("left" as const),
+      footerText: config?.footerText || "Merci pour votre confiance.",
+    };
+
     try {
       // Générer le PDF
       const blob = await pdf(
-        <InvoicePDF config={config} data={data} />,
+        <InvoicePDF config={safeConfig} data={data} />,
       ).toBlob();
 
       // Créer un lien de téléchargement
@@ -123,9 +136,22 @@ export function PDFDownloadIconButton({
   const handleDownload = async () => {
     setIsGenerating(true);
 
+    // S'assurer que la config a toutes les valeurs nécessaires
+    const safeConfig = {
+      primaryColor: config?.primaryColor || "#1f2937",
+      secondaryColor: config?.secondaryColor || "#6b7280",
+      fontFamily: config?.fontFamily || "Inter",
+      fontSize: config?.fontSize || 12,
+      layout: config?.layout || ("classic" as const),
+      showLogo: config?.showLogo !== false,
+      logoUrl: config?.logoUrl || null,
+      headerPosition: config?.headerPosition || ("left" as const),
+      footerText: config?.footerText || "Merci pour votre confiance.",
+    };
+
     try {
       const blob = await pdf(
-        <InvoicePDF config={config} data={data} />,
+        <InvoicePDF config={safeConfig} data={data} />,
       ).toBlob();
 
       const url = URL.createObjectURL(blob);
@@ -201,7 +227,7 @@ export function DocumentPDFDownloadButton({
     fontSize: 12,
     layout: "classic",
     showLogo: true,
-    showWatermark: false,
+    logoUrl: null,
     headerPosition: "left",
     footerText: "Merci pour votre confiance.",
   };
@@ -223,7 +249,7 @@ export function DocumentPDFDownloadButton({
       const previewData = documentToPreviewData(document);
 
       // Utiliser la config du template ou la config par défaut
-      const templateConfig: TemplateConfig = document.template?.config
+      const mergedConfig = document.template?.config
         ? {
             ...defaultConfig,
             ...(document.template.config as Partial<TemplateConfig>),
@@ -234,6 +260,16 @@ export function DocumentPDFDownloadButton({
               ...(document.styleConfig as Partial<TemplateConfig>),
             }
           : defaultConfig;
+
+      // S'assurer que toutes les valeurs critiques sont définies
+      const templateConfig: TemplateConfig = {
+        ...mergedConfig,
+        layout: mergedConfig.layout || "classic",
+        primaryColor: mergedConfig.primaryColor || "#1f2937",
+        secondaryColor: mergedConfig.secondaryColor || "#6b7280",
+        fontSize: mergedConfig.fontSize || 12,
+        headerPosition: mergedConfig.headerPosition || "left",
+      };
 
       // Générer le PDF
       const blob = await pdf(

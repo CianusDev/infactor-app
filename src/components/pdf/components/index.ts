@@ -20,6 +20,3 @@ export type { PDFNotesSectionProps } from "./pdf-notes-section";
 
 export { PDFFooter } from "./pdf-footer";
 export type { PDFFooterProps } from "./pdf-footer";
-
-export { PDFWatermark } from "./pdf-watermark";
-export type { PDFWatermarkProps } from "./pdf-watermark";

@@ -73,7 +73,6 @@ export interface UseTemplateCustomizerReturn {
   setFontSize: (size: number) => void;
   setLayout: (layout: "classic" | "modern" | "minimal") => void;
   setShowLogo: (show: boolean) => void;
-  setShowWatermark: (show: boolean) => void;
   setHeaderPosition: (position: "left" | "center" | "right") => void;
   setFooterText: (text: string) => void;
   // Actions
@@ -89,7 +88,9 @@ export interface UseTemplateCustomizerReturn {
 const defaultPreviewData: InvoicePreviewData = {
   invoiceNumber: "FAC-2025-0001",
   issueDate: new Date().toLocaleDateString("fr-FR"),
-  dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("fr-FR"),
+  dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
+    "fr-FR",
+  ),
   // Entreprise
   companyName: "Ma Société",
   companyAddress: "123 Rue de l'Exemple",
@@ -151,7 +152,7 @@ const defaultConfig: TemplateConfig = {
   fontSize: 12,
   layout: "classic",
   showLogo: true,
-  showWatermark: false,
+  logoUrl: null,
   headerPosition: "left",
   footerText: "Merci pour votre confiance.",
 };
@@ -161,7 +162,7 @@ const defaultConfig: TemplateConfig = {
 // ============================================
 
 export function useTemplateCustomizer(
-  options: UseTemplateCustomizerOptions = {}
+  options: UseTemplateCustomizerOptions = {},
 ): UseTemplateCustomizerReturn {
   const { template, initialConfig } = options;
 
@@ -186,7 +187,8 @@ export function useTemplateCustomizer(
   const [config, setConfig] = useState<TemplateConfig>(originalConfig);
 
   // État des données de prévisualisation
-  const [previewData, setPreviewDataState] = useState<InvoicePreviewData>(defaultPreviewData);
+  const [previewData, setPreviewDataState] =
+    useState<InvoicePreviewData>(defaultPreviewData);
 
   // Vérifier si des changements ont été effectués
   const hasChanges = useMemo(() => {
@@ -221,13 +223,12 @@ export function useTemplateCustomizer(
     setConfig((prev) => ({ ...prev, showLogo: show }));
   }, []);
 
-  const setShowWatermark = useCallback((show: boolean) => {
-    setConfig((prev) => ({ ...prev, showWatermark: show }));
-  }, []);
-
-  const setHeaderPosition = useCallback((position: "left" | "center" | "right") => {
-    setConfig((prev) => ({ ...prev, headerPosition: position }));
-  }, []);
+  const setHeaderPosition = useCallback(
+    (position: "left" | "center" | "right") => {
+      setConfig((prev) => ({ ...prev, headerPosition: position }));
+    },
+    [],
+  );
 
   const setFooterText = useCallback((text: string) => {
     setConfig((prev) => ({ ...prev, footerText: text }));
@@ -260,7 +261,6 @@ export function useTemplateCustomizer(
     setFontSize,
     setLayout,
     setShowLogo,
-    setShowWatermark,
     setHeaderPosition,
     setFooterText,
     updateConfig,
@@ -286,9 +286,21 @@ export const FONT_FAMILIES = [
 ] as const;
 
 export const LAYOUT_OPTIONS = [
-  { value: "classic", label: "Classique", description: "Design traditionnel et professionnel" },
-  { value: "modern", label: "Moderne", description: "Style contemporain avec des touches de couleur" },
-  { value: "minimal", label: "Minimaliste", description: "Épuré et simple, focus sur le contenu" },
+  {
+    value: "classic",
+    label: "Classique",
+    description: "Design traditionnel et professionnel",
+  },
+  {
+    value: "modern",
+    label: "Moderne",
+    description: "Style contemporain avec des touches de couleur",
+  },
+  {
+    value: "minimal",
+    label: "Minimaliste",
+    description: "Épuré et simple, focus sur le contenu",
+  },
 ] as const;
 
 export const HEADER_POSITIONS = [

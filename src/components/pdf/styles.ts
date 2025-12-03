@@ -12,14 +12,16 @@ registerPDFFonts();
 /**
  * Crée les styles PDF dynamiquement basés sur la configuration du template
  */
-export function createPDFStyles(config: TemplateConfig) {
-  const {
-    primaryColor = "#1f2937",
-    secondaryColor = "#6b7280",
-    fontSize = 12,
-    layout = "classic",
-    headerPosition = "left",
-  } = config;
+export function createPDFStyles(config: TemplateConfig | null | undefined) {
+  // Valeurs par défaut si config est null/undefined
+  const safeConfig = config || {};
+
+  const primaryColor = safeConfig.primaryColor || "#1f2937";
+  const secondaryColor = safeConfig.secondaryColor || "#6b7280";
+  const fontSize = safeConfig.fontSize || 12;
+  const layout: "classic" | "modern" | "minimal" =
+    safeConfig.layout || "classic";
+  const headerPosition = safeConfig.headerPosition || "left";
 
   // Alignement du header
   const headerAlign =
@@ -150,9 +152,11 @@ export function createPDFStyles(config: TemplateConfig) {
       width: 200,
       padding: 15,
       backgroundColor: layout === "modern" ? "#f9fafb" : "transparent",
-      borderWidth: layout === "modern" ? 0 : 1,
-      borderColor: secondaryColor,
-      borderRadius: 4,
+      ...(layout !== "modern" && {
+        borderWidth: 1,
+        borderColor: secondaryColor || "#6b7280",
+        borderRadius: 4,
+      }),
     },
 
     clientTitle: {
@@ -185,10 +189,13 @@ export function createPDFStyles(config: TemplateConfig) {
     tableHeader: {
       flexDirection: "row",
       backgroundColor: layout === "modern" ? primaryColor : "transparent",
-      borderBottomWidth: layout === "modern" ? 0 : 1,
-      borderBottomColor: layout === "minimal" ? primaryColor : secondaryColor,
       paddingVertical: 10,
       paddingHorizontal: 10,
+      ...(layout !== "modern" && {
+        borderBottomWidth: 1,
+        borderBottomColor:
+          (layout === "minimal" ? primaryColor : secondaryColor) || "#6b7280",
+      }),
     },
 
     tableHeaderText: {
@@ -199,7 +206,7 @@ export function createPDFStyles(config: TemplateConfig) {
     tableRow: {
       flexDirection: "row",
       borderBottomWidth: 1,
-      borderBottomColor: `${secondaryColor}30`,
+      borderBottomColor: `${secondaryColor || "#6b7280"}30`,
       paddingVertical: 10,
       paddingHorizontal: 10,
     },
@@ -264,7 +271,7 @@ export function createPDFStyles(config: TemplateConfig) {
 
     separator: {
       borderBottomWidth: 1,
-      borderBottomColor: secondaryColor,
+      borderBottomColor: secondaryColor || "#6b7280",
       marginVertical: 5,
     },
 
@@ -273,9 +280,10 @@ export function createPDFStyles(config: TemplateConfig) {
       justifyContent: "space-between",
       paddingVertical: 10,
       paddingHorizontal: layout === "modern" ? 10 : 0,
-      backgroundColor:
-        layout === "modern" ? `${primaryColor}10` : "transparent",
-      borderRadius: 4,
+      ...(layout === "modern" && {
+        backgroundColor: `${primaryColor}10`,
+        borderRadius: 4,
+      }),
     },
 
     grandTotalLabel: {
@@ -297,7 +305,7 @@ export function createPDFStyles(config: TemplateConfig) {
       marginTop: 30,
       paddingTop: 20,
       borderTopWidth: 1,
-      borderTopColor: `${secondaryColor}30`,
+      borderTopColor: `${secondaryColor || "#6b7280"}30`,
     },
 
     notesTitle: {
@@ -323,7 +331,7 @@ export function createPDFStyles(config: TemplateConfig) {
       textAlign: "center",
       paddingTop: 15,
       borderTopWidth: 1,
-      borderTopColor: `${secondaryColor}30`,
+      borderTopColor: `${secondaryColor || "#6b7280"}30`,
     },
 
     footerText: {

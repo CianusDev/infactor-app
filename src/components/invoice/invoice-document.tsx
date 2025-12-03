@@ -1,8 +1,41 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { TemplateConfig } from "@/server/modules/template/template.schema";
 import { InvoicePreviewData } from "@/hooks/use-template-customizer";
+
+// ============================================
+// CONSTANTES PARTAGÉES AVEC LE PDF
+// ============================================
+
+const SPACING = {
+  page: 40,
+  sectionMargin: 30,
+  elementMargin: 10,
+  smallMargin: 5,
+  tinyMargin: 2,
+  cardPadding: 15,
+  tableCellPaddingV: 10,
+  tableCellPaddingH: 10,
+  topBarHeight: 8,
+  logoWidth: 120,
+  logoHeight: 50,
+  logoPlaceholderHeight: 40,
+  clientSectionWidth: 200,
+  totalsWidth: 250,
+  colQuantityWidth: 60,
+  colPriceWidth: 80,
+  colTotalWidth: 80,
+};
+
+const FONT_SIZES = {
+  title: 24,
+  companyName: 18,
+  invoiceNumber: 14,
+  grandTotal: 14,
+  small: 9,
+};
 
 // ============================================
 // TYPES
@@ -34,63 +67,157 @@ interface DocumentHeaderProps {
   data: InvoicePreviewData;
   config: TemplateConfig;
   headerAlign: string;
+  headerTextAlign: "left" | "center" | "right";
 }
 
-function DocumentHeader({ data, config, headerAlign }: DocumentHeaderProps) {
-  const { primaryColor, secondaryColor, showLogo } = config;
+function DocumentHeader({
+  data,
+  config,
+  headerAlign,
+  headerTextAlign,
+}: DocumentHeaderProps) {
+  const {
+    primaryColor,
+    secondaryColor,
+    showLogo,
+    logoUrl,
+    fontSize = 12,
+  } = config;
+  const displayLogo = data.companyLogo || logoUrl;
 
   return (
-    <header className={cn("flex flex-col mb-[30px]", headerAlign)}>
+    <header
+      className={cn("flex flex-col", headerAlign)}
+      style={{ marginBottom: SPACING.sectionMargin }}
+    >
       {/* Logo */}
-      {showLogo && (
-        <div
-          className="w-[120px] h-[40px] mb-[10px] flex items-center justify-center rounded"
-          style={{ backgroundColor: primaryColor }}
-        >
-          <span className="text-white font-bold text-sm">LOGO</span>
-        </div>
+      {showLogo !== false && (
+        <>
+          {displayLogo ? (
+            <div style={{ marginBottom: SPACING.elementMargin }}>
+              <Image
+                src={displayLogo}
+                alt="Logo"
+                width={SPACING.logoWidth}
+                height={SPACING.logoHeight}
+                style={{ objectFit: "contain" }}
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                width: SPACING.logoWidth,
+                height: SPACING.logoPlaceholderHeight,
+                backgroundColor: primaryColor,
+                marginBottom: SPACING.elementMargin,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 4,
+              }}
+            >
+              <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>
+                LOGO
+              </span>
+            </div>
+          )}
+        </>
       )}
 
       {/* Nom entreprise */}
       <h1
-        className="text-lg font-bold"
-        style={{ color: primaryColor }}
+        style={{
+          fontSize: FONT_SIZES.companyName,
+          fontWeight: 700,
+          color: primaryColor,
+          textAlign: headerTextAlign,
+          margin: 0,
+        }}
       >
         {data.companyName}
       </h1>
 
       {/* Adresse */}
-      <p className="mt-[2px]" style={{ color: secondaryColor }}>
+      <p
+        style={{
+          fontSize: fontSize - 1,
+          color: secondaryColor,
+          textAlign: headerTextAlign,
+          marginTop: SPACING.tinyMargin,
+          marginBottom: 0,
+        }}
+      >
         {data.companyAddress}
       </p>
-      <p className="mt-[2px]" style={{ color: secondaryColor }}>
+      <p
+        style={{
+          fontSize: fontSize - 1,
+          color: secondaryColor,
+          textAlign: headerTextAlign,
+          marginTop: SPACING.tinyMargin,
+          marginBottom: 0,
+        }}
+      >
         {data.companyPostalCode} {data.companyCity}, {data.companyCountry}
       </p>
 
       {/* Téléphone */}
       {data.companyPhone && (
-        <p className="mt-[2px]" style={{ color: secondaryColor }}>
+        <p
+          style={{
+            fontSize: fontSize - 1,
+            color: secondaryColor,
+            textAlign: headerTextAlign,
+            marginTop: SPACING.tinyMargin,
+            marginBottom: 0,
+          }}
+        >
           Tél: {data.companyPhone}
         </p>
       )}
 
       {/* Email */}
       {data.companyEmail && (
-        <p className="mt-[2px]" style={{ color: secondaryColor }}>
+        <p
+          style={{
+            fontSize: fontSize - 1,
+            color: secondaryColor,
+            textAlign: headerTextAlign,
+            marginTop: SPACING.tinyMargin,
+            marginBottom: 0,
+          }}
+        >
           {data.companyEmail}
         </p>
       )}
 
       {/* SIRET */}
       {data.companySiret && (
-        <p className="text-[9px] mt-[5px]" style={{ color: secondaryColor }}>
+        <p
+          style={{
+            fontSize: FONT_SIZES.small,
+            color: secondaryColor,
+            textAlign: headerTextAlign,
+            marginTop: SPACING.smallMargin,
+            marginBottom: 0,
+          }}
+        >
           SIRET: {data.companySiret}
         </p>
       )}
 
       {/* TVA */}
       {data.companyVatNumber && (
-        <p className="text-[9px]" style={{ color: secondaryColor }}>
+        <p
+          style={{
+            fontSize: FONT_SIZES.small,
+            color: secondaryColor,
+            textAlign: headerTextAlign,
+            marginTop: 0,
+            marginBottom: 0,
+          }}
+        >
           N° TVA: {data.companyVatNumber}
         </p>
       )}
@@ -108,22 +235,34 @@ function DocumentTitle({ invoiceNumber, config }: DocumentTitleProps) {
 
   return (
     <div
-      className={cn(
-        "mb-[30px]",
-        layout === "modern" && "text-center",
-        layout === "minimal" && "border-b-2 pb-[10px]"
-      )}
       style={{
-        borderColor: layout === "minimal" ? primaryColor : undefined,
+        marginBottom: SPACING.sectionMargin,
+        textAlign: layout === "modern" ? "center" : "left",
+        borderBottomWidth: layout === "minimal" ? 2 : 0,
+        borderBottomStyle: "solid",
+        borderBottomColor: layout === "minimal" ? primaryColor : "transparent",
+        paddingBottom: layout === "minimal" ? SPACING.elementMargin : 0,
       }}
     >
       <h2
-        className="text-2xl font-bold tracking-widest"
-        style={{ color: primaryColor }}
+        style={{
+          fontSize: FONT_SIZES.title,
+          fontWeight: 700,
+          color: primaryColor,
+          letterSpacing: 2,
+          margin: 0,
+        }}
       >
         FACTURE
       </h2>
-      <p className="text-sm mt-[5px]" style={{ color: secondaryColor }}>
+      <p
+        style={{
+          fontSize: FONT_SIZES.invoiceNumber,
+          color: secondaryColor,
+          marginTop: SPACING.smallMargin,
+          marginBottom: 0,
+        }}
+      >
         N° {invoiceNumber}
       </p>
     </div>
@@ -136,20 +275,38 @@ interface DocumentInfoSectionProps {
 }
 
 function DocumentInfoSection({ data, config }: DocumentInfoSectionProps) {
-  const { primaryColor, secondaryColor, layout } = config;
+  const { primaryColor, secondaryColor, layout, fontSize = 12 } = config;
 
   return (
-    <div className="flex justify-between mb-[30px]">
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: SPACING.sectionMargin,
+      }}
+    >
       {/* Dates */}
-      <div className="flex-1">
-        <div className="flex mb-[5px]">
-          <span className="font-semibold mr-[5px]" style={{ color: primaryColor }}>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: "flex", marginBottom: SPACING.smallMargin }}>
+          <span
+            style={{
+              fontWeight: 600,
+              color: primaryColor,
+              marginRight: SPACING.smallMargin,
+            }}
+          >
             Date d&apos;émission:
           </span>
           <span style={{ color: secondaryColor }}>{data.issueDate}</span>
         </div>
-        <div className="flex mb-[5px]">
-          <span className="font-semibold mr-[5px]" style={{ color: primaryColor }}>
+        <div style={{ display: "flex", marginBottom: SPACING.smallMargin }}>
+          <span
+            style={{
+              fontWeight: 600,
+              color: primaryColor,
+              marginRight: SPACING.smallMargin,
+            }}
+          >
             Date d&apos;échéance:
           </span>
           <span style={{ color: secondaryColor }}>{data.dueDate}</span>
@@ -158,51 +315,97 @@ function DocumentInfoSection({ data, config }: DocumentInfoSectionProps) {
 
       {/* Client */}
       <div
-        className={cn(
-          "w-[200px] p-[15px] rounded",
-          layout === "modern" ? "bg-gray-50" : "border"
-        )}
         style={{
-          borderColor: layout !== "modern" ? secondaryColor : undefined,
+          width: SPACING.clientSectionWidth,
+          padding: SPACING.cardPadding,
+          backgroundColor: layout === "modern" ? "#f9fafb" : "transparent",
+          border: layout !== "modern" ? `1px solid ${secondaryColor}` : "none",
+          borderRadius: 4,
         }}
       >
         <h3
-          className="text-xs font-bold uppercase tracking-wide mb-[8px]"
-          style={{ color: primaryColor }}
+          style={{
+            fontSize: fontSize - 1,
+            fontWeight: 700,
+            color: primaryColor,
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            marginBottom: 8,
+            marginTop: 0,
+          }}
         >
           Facturer à
         </h3>
-        <p className="font-semibold mb-[3px]" style={{ color: primaryColor }}>
+        <p
+          style={{
+            fontWeight: 600,
+            color: primaryColor,
+            marginBottom: 3,
+            marginTop: 0,
+          }}
+        >
           {data.clientName}
         </p>
 
         {data.clientAddress && (
-          <p className="mb-[2px]" style={{ color: secondaryColor }}>
+          <p
+            style={{
+              color: secondaryColor,
+              marginBottom: SPACING.tinyMargin,
+              marginTop: 0,
+            }}
+          >
             {data.clientAddress}
           </p>
         )}
 
         {(data.clientPostalCode || data.clientCity) && (
-          <p className="mb-[2px]" style={{ color: secondaryColor }}>
+          <p
+            style={{
+              color: secondaryColor,
+              marginBottom: SPACING.tinyMargin,
+              marginTop: 0,
+            }}
+          >
             {data.clientPostalCode} {data.clientCity}
             {data.clientCountry ? `, ${data.clientCountry}` : ""}
           </p>
         )}
 
         {data.clientEmail && (
-          <p className="mt-[8px]" style={{ color: secondaryColor }}>
+          <p
+            style={{
+              color: secondaryColor,
+              marginTop: 8,
+              marginBottom: 0,
+            }}
+          >
             {data.clientEmail}
           </p>
         )}
 
         {data.clientSiret && (
-          <p className="text-[9px] mt-[5px]" style={{ color: secondaryColor }}>
+          <p
+            style={{
+              fontSize: FONT_SIZES.small,
+              color: secondaryColor,
+              marginTop: SPACING.smallMargin,
+              marginBottom: 0,
+            }}
+          >
             SIRET: {data.clientSiret}
           </p>
         )}
 
         {data.clientVatNumber && (
-          <p className="text-[9px]" style={{ color: secondaryColor }}>
+          <p
+            style={{
+              fontSize: FONT_SIZES.small,
+              color: secondaryColor,
+              marginTop: 0,
+              marginBottom: 0,
+            }}
+          >
             N° TVA: {data.clientVatNumber}
           </p>
         )}
@@ -217,45 +420,69 @@ interface DocumentItemsTableProps {
   config: TemplateConfig;
 }
 
-function DocumentItemsTable({ items, currency, config }: DocumentItemsTableProps) {
+function DocumentItemsTable({
+  items,
+  currency,
+  config,
+}: DocumentItemsTableProps) {
   const { primaryColor, secondaryColor, layout } = config;
 
+  const headerStyle: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: layout === "modern" ? primaryColor : "transparent",
+    paddingTop: SPACING.tableCellPaddingV,
+    paddingBottom: SPACING.tableCellPaddingV,
+    paddingLeft: SPACING.tableCellPaddingH,
+    paddingRight: SPACING.tableCellPaddingH,
+    borderBottom:
+      layout !== "modern"
+        ? `1px solid ${layout === "minimal" ? primaryColor : secondaryColor}`
+        : "none",
+  };
+
+  const headerTextColor = layout === "modern" ? "white" : primaryColor;
+
   return (
-    <div className="mb-[30px]">
+    <div style={{ marginBottom: SPACING.sectionMargin }}>
       {/* Header */}
-      <div
-        className={cn(
-          "flex py-[10px] px-[10px]",
-          layout === "modern" && "text-white",
-          layout !== "modern" && "border-b",
-          layout === "minimal" && "border-b-2"
-        )}
-        style={{
-          backgroundColor: layout === "modern" ? primaryColor : undefined,
-          borderColor: layout === "minimal" ? primaryColor : secondaryColor,
-        }}
-      >
+      <div style={headerStyle}>
         <div
-          className="flex-[3] font-semibold"
-          style={{ color: layout === "modern" ? "white" : primaryColor }}
+          style={{
+            flex: 3,
+            fontWeight: 600,
+            color: headerTextColor,
+          }}
         >
           Description
         </div>
         <div
-          className="w-[60px] text-center font-semibold"
-          style={{ color: layout === "modern" ? "white" : primaryColor }}
+          style={{
+            width: SPACING.colQuantityWidth,
+            textAlign: "center",
+            fontWeight: 600,
+            color: headerTextColor,
+          }}
         >
           Qté
         </div>
         <div
-          className="w-[80px] text-right font-semibold"
-          style={{ color: layout === "modern" ? "white" : primaryColor }}
+          style={{
+            width: SPACING.colPriceWidth,
+            textAlign: "right",
+            fontWeight: 600,
+            color: headerTextColor,
+          }}
         >
           Prix unit.
         </div>
         <div
-          className="w-[80px] text-right font-semibold"
-          style={{ color: layout === "modern" ? "white" : primaryColor }}
+          style={{
+            width: SPACING.colTotalWidth,
+            textAlign: "right",
+            fontWeight: 600,
+            color: headerTextColor,
+          }}
         >
           Total
         </div>
@@ -265,24 +492,48 @@ function DocumentItemsTable({ items, currency, config }: DocumentItemsTableProps
       {items.map((item, index) => (
         <div
           key={index}
-          className={cn(
-            "flex py-[10px] px-[10px] border-b",
-            layout === "modern" && index % 2 === 0 && "bg-gray-50"
-          )}
-          style={{ borderColor: `${secondaryColor}30` }}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            paddingTop: SPACING.tableCellPaddingV,
+            paddingBottom: SPACING.tableCellPaddingV,
+            paddingLeft: SPACING.tableCellPaddingH,
+            paddingRight: SPACING.tableCellPaddingH,
+            borderBottom: `1px solid ${secondaryColor}30`,
+            backgroundColor:
+              layout === "modern" && index % 2 === 0
+                ? "#f9fafb"
+                : "transparent",
+          }}
         >
-          <div className="flex-[3]" style={{ color: secondaryColor }}>
+          <div style={{ flex: 3, color: secondaryColor }}>
             {item.description}
           </div>
-          <div className="w-[60px] text-center" style={{ color: secondaryColor }}>
+          <div
+            style={{
+              width: SPACING.colQuantityWidth,
+              textAlign: "center",
+              color: secondaryColor,
+            }}
+          >
             {item.quantity}
           </div>
-          <div className="w-[80px] text-right" style={{ color: secondaryColor }}>
+          <div
+            style={{
+              width: SPACING.colPriceWidth,
+              textAlign: "right",
+              color: secondaryColor,
+            }}
+          >
             {formatCurrency(item.unitPrice, currency)}
           </div>
           <div
-            className="w-[80px] text-right font-semibold"
-            style={{ color: primaryColor }}
+            style={{
+              width: SPACING.colTotalWidth,
+              textAlign: "right",
+              fontWeight: 600,
+              color: primaryColor,
+            }}
           >
             {formatCurrency(item.total, currency)}
           </div>
@@ -301,10 +552,23 @@ function DocumentTotals({ data, config }: DocumentTotalsProps) {
   const { primaryColor, secondaryColor, layout } = config;
 
   return (
-    <div className="flex justify-end mb-[30px]">
-      <div className="w-[250px]">
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        marginBottom: SPACING.sectionMargin,
+      }}
+    >
+      <div style={{ width: SPACING.totalsWidth }}>
         {/* Sous-total */}
-        <div className="flex justify-between py-[5px]">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            paddingTop: SPACING.smallMargin,
+            paddingBottom: SPACING.smallMargin,
+          }}
+        >
           <span style={{ color: secondaryColor }}>Sous-total HT</span>
           <span style={{ color: primaryColor }}>
             {formatCurrency(data.subtotal, data.currency)}
@@ -313,16 +577,30 @@ function DocumentTotals({ data, config }: DocumentTotalsProps) {
 
         {/* Remise */}
         {data.discount && data.discount > 0 && (
-          <div className="flex justify-between py-[5px]">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: SPACING.smallMargin,
+              paddingBottom: SPACING.smallMargin,
+            }}
+          >
             <span style={{ color: secondaryColor }}>Remise</span>
-            <span className="text-green-600">
+            <span style={{ color: "#16a34a" }}>
               -{formatCurrency(data.discount, data.currency)}
             </span>
           </div>
         )}
 
         {/* TVA */}
-        <div className="flex justify-between py-[5px]">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            paddingTop: SPACING.smallMargin,
+            paddingBottom: SPACING.smallMargin,
+          }}
+        >
           <span style={{ color: secondaryColor }}>TVA ({data.taxRate}%)</span>
           <span style={{ color: primaryColor }}>
             {formatCurrency(data.taxAmount, data.currency)}
@@ -331,18 +609,27 @@ function DocumentTotals({ data, config }: DocumentTotalsProps) {
 
         {/* Séparateur */}
         <div
-          className="border-b my-[5px]"
-          style={{ borderColor: secondaryColor }}
+          style={{
+            borderBottom: `1px solid ${secondaryColor}`,
+            marginTop: SPACING.smallMargin,
+            marginBottom: SPACING.smallMargin,
+          }}
         />
 
         {/* Total TTC */}
         <div
-          className={cn(
-            "flex justify-between py-[10px] text-sm font-bold",
-            layout === "modern" && "rounded px-[10px] -mx-[10px]"
-          )}
           style={{
-            backgroundColor: layout === "modern" ? `${primaryColor}10` : undefined,
+            display: "flex",
+            justifyContent: "space-between",
+            paddingTop: SPACING.tableCellPaddingV,
+            paddingBottom: SPACING.tableCellPaddingV,
+            paddingLeft: layout === "modern" ? SPACING.tableCellPaddingH : 0,
+            paddingRight: layout === "modern" ? SPACING.tableCellPaddingH : 0,
+            backgroundColor:
+              layout === "modern" ? `${primaryColor}10` : "transparent",
+            borderRadius: layout === "modern" ? 4 : 0,
+            fontSize: FONT_SIZES.grandTotal,
+            fontWeight: 700,
             color: primaryColor,
           }}
         >
@@ -361,7 +648,7 @@ interface DocumentNotesProps {
 }
 
 function DocumentNotes({ notes, terms, config }: DocumentNotesProps) {
-  const { primaryColor, secondaryColor } = config;
+  const { primaryColor, secondaryColor, fontSize = 12 } = config;
 
   if (!notes && !terms) {
     return null;
@@ -369,17 +656,32 @@ function DocumentNotes({ notes, terms, config }: DocumentNotesProps) {
 
   return (
     <div
-      className="mt-[30px] pt-[20px] border-t"
-      style={{ borderColor: `${secondaryColor}30` }}
+      style={{
+        marginTop: SPACING.sectionMargin,
+        paddingTop: 20,
+        borderTop: `1px solid ${secondaryColor}30`,
+      }}
     >
       {notes && (
-        <div className="mb-[15px]">
-          <h4 className="font-semibold mb-[5px]" style={{ color: primaryColor }}>
+        <div style={{ marginBottom: 15 }}>
+          <h4
+            style={{
+              fontWeight: 600,
+              color: primaryColor,
+              marginBottom: SPACING.smallMargin,
+              marginTop: 0,
+            }}
+          >
             Notes
           </h4>
           <p
-            className="text-xs leading-relaxed whitespace-pre-line"
-            style={{ color: secondaryColor }}
+            style={{
+              fontSize: fontSize - 1,
+              color: secondaryColor,
+              lineHeight: 1.5,
+              whiteSpace: "pre-line",
+              margin: 0,
+            }}
           >
             {notes}
           </p>
@@ -388,12 +690,24 @@ function DocumentNotes({ notes, terms, config }: DocumentNotesProps) {
 
       {terms && (
         <div>
-          <h4 className="font-semibold mb-[5px]" style={{ color: primaryColor }}>
+          <h4
+            style={{
+              fontWeight: 600,
+              color: primaryColor,
+              marginBottom: SPACING.smallMargin,
+              marginTop: 0,
+            }}
+          >
             Conditions de paiement
           </h4>
           <p
-            className="text-xs leading-relaxed whitespace-pre-line"
-            style={{ color: secondaryColor }}
+            style={{
+              fontSize: fontSize - 1,
+              color: secondaryColor,
+              lineHeight: 1.5,
+              whiteSpace: "pre-line",
+              margin: 0,
+            }}
           >
             {terms}
           </p>
@@ -409,7 +723,7 @@ interface DocumentFooterProps {
 }
 
 function DocumentFooter({ footerText, config }: DocumentFooterProps) {
-  const { secondaryColor } = config;
+  const { secondaryColor, fontSize = 12 } = config;
 
   if (!footerText) {
     return null;
@@ -417,13 +731,19 @@ function DocumentFooter({ footerText, config }: DocumentFooterProps) {
 
   return (
     <footer
-      className="absolute bottom-[40px] left-[40px] right-[40px] text-center pt-[15px] border-t"
       style={{
+        position: "absolute",
+        bottom: SPACING.page,
+        left: SPACING.page,
+        right: SPACING.page,
+        textAlign: "center",
+        paddingTop: 15,
+        borderTop: `1px solid ${secondaryColor}30`,
+        fontSize: fontSize - 1,
         color: secondaryColor,
-        borderColor: `${secondaryColor}30`,
       }}
     >
-      <p className="text-xs">{footerText}</p>
+      <p style={{ margin: 0 }}>{footerText}</p>
     </footer>
   );
 }
@@ -448,7 +768,6 @@ export function InvoiceDocument({
     secondaryColor = "#6b7280",
     fontSize = 12,
     layout = "classic",
-    showWatermark = false,
     headerPosition = "left",
     footerText = "",
   } = config;
@@ -460,7 +779,6 @@ export function InvoiceDocument({
     secondaryColor,
     fontSize,
     layout,
-    showWatermark,
     headerPosition,
     footerText,
   };
@@ -468,44 +786,43 @@ export function InvoiceDocument({
   // Alignement du header
   const headerAlign =
     headerPosition === "center"
-      ? "items-center text-center"
+      ? "items-center"
       : headerPosition === "right"
-        ? "items-end text-right"
-        : "items-start text-left";
+        ? "items-end"
+        : "items-start";
+
+  const headerTextAlign: "left" | "center" | "right" =
+    headerPosition === "center"
+      ? "center"
+      : headerPosition === "right"
+        ? "right"
+        : "left";
 
   return (
     <div
       className={cn("relative bg-white shadow-lg print:shadow-none", className)}
       style={{
         fontFamily: "Inter, Helvetica, Arial, sans-serif",
-        fontSize: `${fontSize}px`,
+        fontSize: fontSize,
+        color: secondaryColor,
         transform: `scale(${scale})`,
         transformOrigin: "top center",
         width: "210mm",
         minHeight: "297mm",
-        padding: "40px",
+        padding: SPACING.page,
       }}
     >
-      {/* Watermark */}
-      {showWatermark && (
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
-          style={{
-            fontSize: "100px",
-            color: primaryColor,
-            opacity: 0.05,
-            transform: "rotate(-30deg)",
-          }}
-        >
-          <span className="font-bold">{data.companyName}</span>
-        </div>
-      )}
-
       {/* Barre colorée pour le layout moderne */}
       {layout === "modern" && (
         <div
-          className="absolute top-0 left-0 right-0 h-[8px]"
-          style={{ backgroundColor: primaryColor }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: SPACING.topBarHeight,
+            backgroundColor: primaryColor,
+          }}
         />
       )}
 
@@ -514,13 +831,11 @@ export function InvoiceDocument({
         data={data}
         config={fullConfig}
         headerAlign={headerAlign}
+        headerTextAlign={headerTextAlign}
       />
 
       {/* Titre */}
-      <DocumentTitle
-        invoiceNumber={data.invoiceNumber}
-        config={fullConfig}
-      />
+      <DocumentTitle invoiceNumber={data.invoiceNumber} config={fullConfig} />
 
       {/* Section infos */}
       <DocumentInfoSection data={data} config={fullConfig} />
@@ -557,7 +872,7 @@ export function InvoiceDocumentSkeleton({ className }: { className?: string }) {
       className={cn(
         "bg-gray-100 animate-pulse rounded-lg",
         "w-[210mm] min-h-[297mm]",
-        className
+        className,
       )}
     />
   );
